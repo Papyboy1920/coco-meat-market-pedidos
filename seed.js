@@ -8,7 +8,7 @@
 // Precios REAL = confirmados por el dueño.
 // ============================================================
 
-const CATALOG_VERSION = 4;
+const CATALOG_VERSION = 5;
 const SUGERIDO = "💡 Sugerido";
 const NOTA_SUGERIDO = "Precio sugerido — el dueño confirma";
 
@@ -329,10 +329,10 @@ const SEED_CATALOG = {
               name: "Carbón Marabú",
               price: 24.99,
               unit: "bolsa",
-              image: "carbon-marabu.jpg",
+              image: "carbon-marabu-real.jpg",
               tag: SUGERIDO,
               note: NOTA_SUGERIDO,
-              desc: "Bolsa de 20 lb — white quebracho, 100% natural. “The World's Best Grilling Charcoal”. Precio sugerido — el dueño confirma.",
+              desc: "Bolsa de 9 kg (~20 lb) — Havana Caliente MARABU, premium artisanal charcoal, all natural clean burning. Precio sugerido — el dueño confirma.",
               active: true
             }
           ]
