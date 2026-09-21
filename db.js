@@ -98,6 +98,52 @@ function mergeCatalog(live, seed) {
   return { catalog: base, added, filled };
 }
 
+// ---------- Correcciones dirigidas v2 (21-sep-2026, revisión de Portal) ----------
+// Idempotente: aplica fotos premium, precios sugeridos, el nuevo combo y
+// Miércoles de Parrilla sobre el catálogo vivo, por ID exacto.
+// mergeCatalog() nunca sobrescribe campos no vacíos, por eso esto existe.
+// No toca pedidos ni ninguna otra clave.
+function applyCorrections(catalog) {
+  if (!catalog || !Array.isArray(catalog.departments))
+    return { patched: 0, added: 0, removed: 0 };
+  const seedItems = {};
+  for (const d of SEED_CATALOG.departments || [])
+    for (const c of d.categories || [])
+      for (const it of c.items || []) seedItems[it.id] = it;
+  let patched = 0, added = 0, removed = 0;
+  for (const d of catalog.departments) {
+    if (d.id === "especiales-miercoles") d.name = "Miércoles de Parrilla — $10 OFF";
+    for (const c of d.categories || []) {
+      c.items = c.items || [];
+      const before = c.items.length;
+      c.items = c.items.filter((it) => it.id !== "oferta-miercoles");
+      removed += before - c.items.length;
+      for (const it of c.items) {
+        const s = seedItems[it.id];
+        if (!s) continue;
+        for (const f of ["price", "unit", "image", "tag", "note", "desc", "active"]) {
+          if (s[f] !== undefined && it[f] !== s[f]) { it[f] = s[f]; patched++; }
+        }
+        if (it.pending) { delete it.pending; patched++; }
+      }
+      // Ítems nuevos de la semilla que la fusión no haya agregado aún
+      const ids = new Set(c.items.map((it) => it.id));
+      const sDept = (SEED_CATALOG.departments || []).find((x) => x.id === d.id);
+      for (const sCat of (sDept && sDept.categories) || []) {
+        if (sCat.id !== c.id) continue;
+        for (const s of sCat.items || []) {
+          if (!ids.has(s.id)) {
+            c.items.push(JSON.parse(JSON.stringify(s)));
+            ids.add(s.id);
+            added++;
+          }
+        }
+      }
+    }
+  }
+  return { patched, added, removed };
+}
+
 async function init() {
   if (process.env.DATABASE_URL) {
     const { Pool } = require("pg");
@@ -130,9 +176,10 @@ async function init() {
       let live = null;
       try { live = JSON.parse(await kvGet("catalog")); } catch { live = null; }
       const m = mergeCatalog(live, SEED_CATALOG);
+      const corr = applyCorrections(m.catalog);
       await kvSet("catalog", JSON.stringify(m.catalog));
       await kvSet("catalog_version", String(CATALOG_VERSION));
-      console.log(`[coco] Catálogo fusionado (v${v} → v${CATALOG_VERSION}): +${m.added} nuevos, ${m.filled} campos rellenados. Lo del dueño intacto.`);
+      console.log(`[coco] Catálogo fusionado (v${v} → v${CATALOG_VERSION}): +${m.added} nuevos, ${m.filled} campos rellenados. Correcciones v2: ${corr.patched} campos, +${corr.added} ítems, −${corr.removed} eliminados. Lo del dueño intacto.`);
     }
   }
   if (!(await kvGet("order_seq"))) await kvSet("order_seq", "0");
