@@ -1,6 +1,6 @@
 // ============================================================
 // Coco Meat Market — catálogo semilla (US$)
-// Versión 2 — fix round 21-sep-2026 (revisión de Portal):
+// Versión 3 — Portal 21-sep-2026: 4 combos BBQ, desc destacada en modal.
 //  - Todas las fotos: premium generadas estilo carnicería red/black.
 //  - Sin "Precio por confirmar": todo tiene precio REAL o 💡 Sugerido.
 //  - Nuevo: Combo Asado Clásico ($99 sugerido).
@@ -8,7 +8,7 @@
 // Precios REAL = confirmados por el dueño.
 // ============================================================
 
-const CATALOG_VERSION = 2;
+const CATALOG_VERSION = 3;
 const SUGERIDO = "💡 Sugerido";
 const NOTA_SUGERIDO = "Precio sugerido — el dueño confirma";
 
@@ -42,6 +42,28 @@ const SEED_CATALOG = {
               tag: SUGERIDO,
               note: NOTA_SUGERIDO,
               desc: "1 picanha entera, 2 ribeyes, 2 New York y 1 pack de chorizo argentino. ~8–10 lb de pura parrilla. Precio sugerido — el dueño confirma.",
+              active: true
+            },
+            {
+              id: "combo-parrilla-familiar",
+              name: "Combo Parrilla Familiar",
+              price: 139,
+              unit: "combo",
+              image: "combo-parrilla-familiar.jpg",
+              tag: SUGERIDO,
+              note: NOTA_SUGERIDO,
+              desc: "2 churrascos, 2 cowboys, 1 punta de filete y 2 chuck steaks. ~12–14 lb para la familia completa. Precio sugerido — el dueño confirma.",
+              active: true
+            },
+            {
+              id: "combo-asado-express",
+              name: "Combo Asado Express",
+              price: 69.99,
+              unit: "combo",
+              image: "combo-asado-express.jpg",
+              tag: SUGERIDO,
+              note: NOTA_SUGERIDO,
+              desc: "1 churrasco, 1 picanha, 2 New York y 1 pack de chorizo argentino. ~6–7 lb — el asado rápido sin perder la calidad. Precio sugerido — el dueño confirma.",
               active: true
             }
           ]
