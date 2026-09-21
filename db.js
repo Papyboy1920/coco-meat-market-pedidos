@@ -141,6 +141,16 @@ function applyCorrections(catalog) {
       }
     }
   }
+  // Orden: El Más Vendido primero en Combos BBQ (el best seller manda)
+  const COMBOS_ORDER = ["el-mas-vendido", "super-combo-coco", "combo-asado-clasico", "combo-parrilla-familiar", "combo-asado-express"];
+  for (const d of catalog.departments) {
+    if (d.id !== "combos-bbq") continue;
+    for (const c of d.categories || []) {
+      if (c.id !== "combos-todos" || !Array.isArray(c.items)) continue;
+      const rank = (id) => { const i = COMBOS_ORDER.indexOf(id); return i === -1 ? 999 : i; };
+      c.items.sort((a, b) => rank(a.id) - rank(b.id));
+    }
+  }
   return { patched, added, removed };
 }
 

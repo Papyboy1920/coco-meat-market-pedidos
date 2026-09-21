@@ -1,6 +1,6 @@
 // ============================================================
 // Coco Meat Market — catálogo semilla (US$)
-// Versión 3 — Portal 21-sep-2026: 4 combos BBQ, desc destacada en modal.
+// Versión 4 — Portal 21-sep-2026: El Más Vendido $145 primero en Combos BBQ.
 //  - Todas las fotos: premium generadas estilo carnicería red/black.
 //  - Sin "Precio por confirmar": todo tiene precio REAL o 💡 Sugerido.
 //  - Nuevo: Combo Asado Clásico ($99 sugerido).
@@ -8,7 +8,7 @@
 // Precios REAL = confirmados por el dueño.
 // ============================================================
 
-const CATALOG_VERSION = 3;
+const CATALOG_VERSION = 4;
 const SUGERIDO = "💡 Sugerido";
 const NOTA_SUGERIDO = "Precio sugerido — el dueño confirma";
 
@@ -23,6 +23,16 @@ const SEED_CATALOG = {
           id: "combos-todos",
           name: "Todo",
           items: [
+            {
+              id: "el-mas-vendido",
+              name: "El Más Vendido",
+              price: 145,
+              unit: "combo",
+              image: "combo-mas-vendido.jpg",
+              tag: "🔥 El Más Vendido",
+              desc: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa. Recoger $145 · Delivery +$15.",
+              active: true
+            },
             {
               id: "super-combo-coco",
               name: "Súper Combo Coco",
