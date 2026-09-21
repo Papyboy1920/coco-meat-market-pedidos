@@ -1,0 +1,19 @@
+{
+  "author": "",
+  "dependencies": {
+    "express": "^5.2.1",
+    "pg": "^8.13.1"
+  },
+  "description": "Sistema de pedidos para Coco Meat Market — carnicería con recoger (Kendall/Eureka) y delivery +$15 en todo Miami-Dade",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "server.js",
+  "name": "coco-meat-market-pedidos",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "version": "1.0.0"
+}
