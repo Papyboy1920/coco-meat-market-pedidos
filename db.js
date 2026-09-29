@@ -141,6 +141,12 @@ function applyCorrections(catalog) {
       }
     }
   }
+  // Orden: Especiales primero (es el especial que Portal promociona)
+  const espIdx = (catalog.departments || []).findIndex((d) => d.id === "especiales");
+  if (espIdx > 0) {
+    const [esp] = catalog.departments.splice(espIdx, 1);
+    catalog.departments.unshift(esp);
+  }
   // Orden: El Más Vendido primero en Combos BBQ (el best seller manda)
   const COMBOS_ORDER = ["el-mas-vendido", "super-combo-coco", "combo-asado-clasico", "combo-parrilla-familiar", "combo-asado-express"];
   for (const d of catalog.departments) {

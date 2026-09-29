@@ -8,12 +8,35 @@
 // Precios REAL = confirmados por el dueño.
 // ============================================================
 
-const CATALOG_VERSION = 5;
+const CATALOG_VERSION = 6;
 const SUGERIDO = "💡 Sugerido";
 const NOTA_SUGERIDO = "Precio sugerido — el dueño confirma";
 
 const SEED_CATALOG = {
   departments: [
+    {
+      id: "especiales",
+      name: "Especiales",
+      icon: "🏷️",
+      categories: [
+        {
+          id: "especiales-todos",
+          name: "Todo",
+          items: [
+            {
+              id: "combo-20-21-lb",
+              name: "Combo 20-21 lbs",
+              price: 180,
+              unit: "combo",
+              image: "combo-20-21-lb.jpg",
+              tag: "🔥 Nuevo",
+              desc: "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery $200.",
+              active: true
+            }
+          ]
+        }
+      ]
+    },
     {
       id: "combos-bbq",
       name: "Combos BBQ",
