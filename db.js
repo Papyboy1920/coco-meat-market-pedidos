@@ -160,6 +160,47 @@ function applyCorrections(catalog) {
   return { patched, added, removed };
 }
 
+// ---------- Migración de copy de delivery v3 (30-sep-2026) ----------
+// Elimina el cargo fijo de $15: el delivery ahora es "todo Miami, costo
+// extra según la ubicación (lo confirma el dueño)". mergeCatalog() nunca
+// sobrescribe campos no vacíos, así que esta migración dirigida actualiza
+// las descripciones que ya viven en el catálogo vivo.
+// REGLA DE ORO: solo reemplaza si la descripción coincide EXACTAMENTE con
+// el texto viejo de la semilla. Si el dueño la editó (cualquier diferencia),
+// se deja intacta. Idempotente: tras aplicarse, el texto viejo ya no existe.
+const DELIVERY_COPY_FIXES = {
+  "combo-20-21-lb": {
+    old: "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery $200.",
+    new: "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación)."
+  },
+  "el-mas-vendido": {
+    old: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa. Recoger $145 · Delivery +$15.",
+    new: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa. Recoger $145 · Delivery en todo Miami (costo extra según ubicación)."
+  },
+  "super-combo-coco": {
+    old: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy. Recoger $180 · Delivery $195 (incluye $15 de cargo por delivery).",
+    new: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy. Recoger $180 · Delivery en todo Miami (costo extra según ubicación)."
+  }
+};
+async function applyDeliveryCopyMigration() {
+  const raw = await kvGet("catalog");
+  if (!raw) return 0;
+  let catalog = null;
+  try { catalog = JSON.parse(raw); } catch { return 0; }
+  if (!catalog || !Array.isArray(catalog.departments)) return 0;
+  let fixed = 0;
+  for (const d of catalog.departments) {
+    for (const c of d.categories || []) {
+      for (const it of c.items || []) {
+        const fix = DELIVERY_COPY_FIXES[it.id];
+        if (fix && it.desc === fix.old) { it.desc = fix.new; fixed++; }
+      }
+    }
+  }
+  if (fixed) await kvSet("catalog", JSON.stringify(catalog));
+  return fixed;
+}
+
 async function init() {
   if (process.env.DATABASE_URL) {
     const { Pool } = require("pg");
@@ -198,6 +239,9 @@ async function init() {
       console.log(`[coco] Catálogo fusionado (v${v} → v${CATALOG_VERSION}): +${m.added} nuevos, ${m.filled} campos rellenados. Correcciones v2: ${corr.patched} campos, +${corr.added} ítems, −${corr.removed} eliminados. Lo del dueño intacto.`);
     }
   }
+  // Migración de copy de delivery: corre descripciones con el viejo cargo $15.
+  const dcopy = await applyDeliveryCopyMigration();
+  if (dcopy) console.log(`[coco] Copy de delivery actualizado en ${dcopy} ítem(s).`);
   if (!(await kvGet("order_seq"))) await kvSet("order_seq", "0");
   return kind;
 }
@@ -301,6 +345,17 @@ async function getOrder(id) {
   return row ? mapOrder(row) : null;
 }
 
+// Búsqueda pública por número (para el rastreador del cliente).
+// La verificación número+teléfono la hace la ruta /api/track.
+async function getOrderByNumber(number) {
+  if (kind === "pg") {
+    const r = await pool.query("SELECT * FROM orders WHERE number = $1", [number]);
+    return r.rows.length ? mapOrder(r.rows[0]) : null;
+  }
+  const row = sdb.prepare("SELECT * FROM orders WHERE number = ?").get(number);
+  return row ? mapOrder(row) : null;
+}
+
 async function updateOrderStatus(id, status) {
   if (kind === "pg") {
     const r = await pool.query("UPDATE orders SET status = $1 WHERE id = $2 RETURNING *", [status, id]);
@@ -343,6 +398,7 @@ module.exports = {
   createOrder,
   listOrders,
   getOrder,
+  getOrderByNumber,
   updateOrderStatus,
   deleteOrder,
   deleteAllOrders

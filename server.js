@@ -106,7 +106,7 @@ app.post("/api/settings", requireStore, async (req, res) => {
 
 // ---------------- API: pedidos ----------------
 const VALID_STATUS = ["nuevo", "preparando", "listo", "entregado", "cancelado", "pendiente_pago"];
-const DELIVERY_FEE = 15; // cargo único por pedido con delivery, todo Miami-Dade
+const DELIVERY_FEE = 0; // sin cargo fijo: delivery en todo Miami; costo extra según la ubicación (lo confirma el dueño)
 const VALID_STORES = ["kendall", "eureka"];
 
 function findItem(catalog, itemId) {
@@ -124,7 +124,8 @@ function findItem(catalog, itemId) {
 app.post("/api/orders", async (req, res) => {
   const { type, pickup_store, items, customer, payment, notes } = req.body || {};
 
-  // Coco: recoger (Kendall o Eureka) o delivery (+$15) en todo Miami-Dade.
+  // Coco: recoger (Kendall o Eureka) o delivery en todo Miami.
+  // El delivery no lleva cargo fijo en la app; el dueño confirma el costo extra según la ubicación.
   if (type !== "pickup" && type !== "delivery") {
     return res.status(400).json({ error: "Elige Recoger o Delivery." });
   }
@@ -197,6 +198,38 @@ app.post("/api/orders", async (req, res) => {
 
   broadcast("new-order", order);
   res.status(201).json(order);
+});
+
+// Público: seguimiento de pedido.
+// Solo devuelve el pedido si NÚMERO + TELÉFONO coinciden exactamente.
+// Nunca lista pedidos de otros clientes. Campos sensibles (teléfono,
+// dirección, notas internas) jamás se exponen aquí.
+app.get("/api/track", async (req, res) => {
+  let number = String(req.query.number || "").trim();
+  const phone = String(req.query.phone || "").trim();
+  if (!number || !phone) {
+    return res.status(400).json({ error: "Número de pedido y teléfono son obligatorios." });
+  }
+  if (!number.startsWith("#")) number = "#" + number;
+  const digits = s => String(s || "").replace(/\D/g, "");
+  if (!digits(phone)) {
+    return res.status(400).json({ error: "Teléfono inválido." });
+  }
+  const order = await db.getOrderByNumber(number);
+  if (!order || digits(order.customer.phone) !== digits(phone)) {
+    return res.status(404).json({ error: "No encontramos ese pedido. Revisa el número y el teléfono." });
+  }
+  const total = Math.round(order.items.reduce((s, l) => s + (l.subtotal || 0), 0) * 100) / 100;
+  res.json({
+    number: order.number,
+    status: order.status,
+    type: order.type,
+    payment: order.payment,
+    total,
+    items: order.items.map(l => ({ name: l.name, qty: l.qty })),
+    name: order.customer.name,
+    created_at: order.created_at
+  });
 });
 
 // Solo tienda:

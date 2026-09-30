@@ -30,7 +30,7 @@ const SEED_CATALOG = {
               unit: "combo",
               image: "combo-20-21-lb.jpg",
               tag: "🔥 Nuevo",
-              desc: "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery $200.",
+              desc: "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
               active: true
             }
           ]
@@ -53,7 +53,7 @@ const SEED_CATALOG = {
               unit: "combo",
               image: "combo-mas-vendido.jpg",
               tag: "🔥 El Más Vendido",
-              desc: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa. Recoger $145 · Delivery +$15.",
+              desc: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa. Recoger $145 · Delivery en todo Miami (costo extra según ubicación).",
               active: true
             },
             {
@@ -63,7 +63,7 @@ const SEED_CATALOG = {
               unit: "combo",
               image: "super-combo.jpg",
               tag: "REAL",
-              desc: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy. Recoger $180 · Delivery $195 (incluye $15 de cargo por delivery).",
+              desc: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy. Recoger $180 · Delivery en todo Miami (costo extra según ubicación).",
               active: true
             },
             {
