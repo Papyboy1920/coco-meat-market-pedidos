@@ -8,7 +8,7 @@
 // Precios REAL = confirmados por el dueño.
 // ============================================================
 
-const CATALOG_VERSION = 6;
+const CATALOG_VERSION = 7;
 const SUGERIDO = "💡 Sugerido";
 const NOTA_SUGERIDO = "Precio sugerido — el dueño confirma";
 
@@ -25,12 +25,49 @@ const SEED_CATALOG = {
           items: [
             {
               id: "combo-20-21-lb",
-              name: "Combo 20-21 lbs",
+              name: "Combo Pollito Tropical",
               price: 180,
               unit: "combo",
-              image: "combo-20-21-lb.jpg",
+              image: "combo-pollito-tropical.jpg",
               tag: "🔥 Nuevo",
-              desc: "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "21–22 lb: 1 punta filet mignon, 3 filetes New York, 1 portehouse tybone, 2 cowboy steak, 1 paquete churrasco, 5 filetes rib eye, 2 filetes diezmillo, 1 tira asado, 10 choribombones argentinos y chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              active: true
+            },
+            {
+              id: "especial-99",
+              name: "Especial $99.99",
+              price: 99.99,
+              unit: "combo",
+              image: "especial-99.jpg",
+              desc: "10–11 lb: 2 filetes diezmillo, 1 pack churrasco, 2 cowboy steak, 1 filete New York y 1 pack chorizos argentinos. Recoger $99.99 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              active: true
+            },
+            {
+              id: "especial-2-beef",
+              name: "Especial #2 Beef",
+              price: 145,
+              unit: "combo",
+              image: "especial-2-beef.jpg",
+              desc: "14–15 lb: 2 filetes rib eye, 4 filetes New York, 1 tomahawk, 2 filetes diezmillo y 1 pack churrasco. Recoger $145 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              active: true
+            },
+            {
+              id: "combo-yoslin",
+              name: "Combo Yoslin",
+              price: 135,
+              unit: "combo",
+              image: "combo-yoslin.jpg",
+              desc: "14–15 lb: 2 filetes rib eye, 5 filetes New York, 2–3 filetes diezmillo, 1 pack churrasco y 10 choribombones argentinos. Recoger $135 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              active: true
+            },
+            {
+              id: "especial-3-beef",
+              name: "Especial #3 Beef",
+              price: 200,
+              unit: "combo",
+              image: "especial-3-beef.jpg",
+              tag: "🔥 El más completo",
+              desc: "22–23 lb: 1 picanha, 1 portehouse tybone, 1 tira asado, 1 pack churrasco, 1 cowboy, 1 chorizo argentino, 2 New York steaks, 1 tomahawk, 2 rib eye steaks y 3 filetes diezmillo. Recoger $200 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
               active: true
             }
           ]

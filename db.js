@@ -182,8 +182,7 @@ const DELIVERY_COPY_FIXES = {
     new: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy. Recoger $180 · Delivery en todo Miami (costo extra según ubicación)."
   }
 };
-async function applyDeliveryCopyMigration() {
-  const raw = await kvGet("catalog");
+async function applyDeliveryCopyMigration() {  const raw = await kvGet("catalog");
   if (!raw) return 0;
   let catalog = null;
   try { catalog = JSON.parse(raw); } catch { return 0; }
@@ -194,6 +193,44 @@ async function applyDeliveryCopyMigration() {
       for (const it of c.items || []) {
         const fix = DELIVERY_COPY_FIXES[it.id];
         if (fix && it.desc === fix.old) { it.desc = fix.new; fixed++; }
+      }
+    }
+  }
+  if (fixed) await kvSet("catalog", JSON.stringify(catalog));
+  return fixed;
+}
+
+// ---------- Migración Pollito Tropical (30-sep-2026) ----------
+// El viejo "Combo 20-21 lbs" ES el Combo Pollito Tropical de la tienda
+// (su etiqueta real: 21–22 lb, $180). Actualiza nombre+desc+imagen del
+// ítem vivo solo si coincide EXACTAMENTE con el texto de semilla (antes o
+// después de la migración de delivery). Si el dueño lo editó, intacto.
+// Idempotente: tras aplicarse, el texto viejo ya no existe.
+const POLLITO_OLD_DESCS = [
+  "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery $200.",
+  "20–21 lb de cortes premium: ribeyes Gold Carnes Juan Martín y más, con chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación)."
+];
+const POLLITO_NEW = {
+  name: "Combo Pollito Tropical",
+  image: "combo-pollito-tropical.jpg",
+  desc: "21–22 lb: 1 punta filet mignon, 3 filetes New York, 1 portehouse tybone, 2 cowboy steak, 1 paquete churrasco, 5 filetes rib eye, 2 filetes diezmillo, 1 tira asado, 10 choribombones argentinos y chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación)."
+};
+async function applyPollitoMigration() {
+  const raw = await kvGet("catalog");
+  if (!raw) return 0;
+  let catalog = null;
+  try { catalog = JSON.parse(raw); } catch { return 0; }
+  if (!catalog || !Array.isArray(catalog.departments)) return 0;
+  let fixed = 0;
+  for (const d of catalog.departments) {
+    for (const c of d.categories || []) {
+      for (const it of c.items || []) {
+        if (it.id === "combo-20-21-lb" && POLLITO_OLD_DESCS.includes(it.desc)) {
+          it.name = POLLITO_NEW.name;
+          it.image = POLLITO_NEW.image;
+          it.desc = POLLITO_NEW.desc;
+          fixed++;
+        }
       }
     }
   }
@@ -242,6 +279,8 @@ async function init() {
   // Migración de copy de delivery: corre descripciones con el viejo cargo $15.
   const dcopy = await applyDeliveryCopyMigration();
   if (dcopy) console.log(`[coco] Copy de delivery actualizado en ${dcopy} ítem(s).`);
+  const pollito = await applyPollitoMigration();
+  if (pollito) console.log(`[coco] Combo Pollito Tropical reconciliado en ${pollito} ítem(s).`);
   if (!(await kvGet("order_seq"))) await kvSet("order_seq", "0");
   return kind;
 }
