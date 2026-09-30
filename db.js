@@ -244,6 +244,64 @@ async function applyPollitoMigration() {
   return fixed;
 }
 
+// ---------- Migración: descripciones solo-contenido (30-sep-2026) ----------
+// QUÉ TRAE describe solo el combo (contenido + peso). La info de
+// recogida/delivery ya vive en el flujo de checkout (opciones Recoger/
+// Delivery con locales y cobertura), así que el pie de fulfillment se
+// recorta de las descripciones.
+// REGLA DE ORO: solo recorta si la descripción coincide EXACTAMENTE con
+// el texto viejo de la semilla. Si el dueño la editó (cualquier
+// diferencia), se deja intacta. Idempotente: tras aplicarse, el texto
+// viejo ya no existe.
+const FOOTER_TRIM_FIXES = {
+  "combo-20-21-lb": {
+    old: "21–22 lb: 1 punta filet mignon, 3 filetes New York, 1 portehouse tybone, 2 cowboy steak, 1 paquete churrasco, 5 filetes rib eye, 2 filetes diezmillo, 1 tira asado, 10 choribombones argentinos y chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+    new: "21–22 lb: 1 punta filet mignon, 3 filetes New York, 1 portehouse tybone, 2 cowboy steak, 1 paquete churrasco, 5 filetes rib eye, 2 filetes diezmillo, 1 tira asado, 10 choribombones argentinos y chimichurri."
+  },
+  "especial-99": {
+    old: "10–11 lb: 2 filetes diezmillo, 1 pack churrasco, 2 cowboy steak, 1 filete New York y 1 pack chorizos argentinos. Recoger $99.99 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+    new: "10–11 lb: 2 filetes diezmillo, 1 pack churrasco, 2 cowboy steak, 1 filete New York y 1 pack chorizos argentinos."
+  },
+  "especial-2-beef": {
+    old: "14–15 lb: 2 filetes rib eye, 4 filetes New York, 1 tomahawk, 2 filetes diezmillo y 1 pack churrasco. Recoger $145 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+    new: "14–15 lb: 2 filetes rib eye, 4 filetes New York, 1 tomahawk, 2 filetes diezmillo y 1 pack churrasco."
+  },
+  "combo-yoslin": {
+    old: "14–15 lb: 2 filetes rib eye, 5 filetes New York, 2–3 filetes diezmillo, 1 pack churrasco y 10 choribombones argentinos. Recoger $135 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+    new: "14–15 lb: 2 filetes rib eye, 5 filetes New York, 2–3 filetes diezmillo, 1 pack churrasco y 10 choribombones argentinos."
+  },
+  "especial-3-beef": {
+    old: "22–23 lb: 1 picanha, 1 portehouse tybone, 1 tira asado, 1 pack churrasco, 1 cowboy, 1 chorizo argentino, 2 New York steaks, 1 tomahawk, 2 rib eye steaks y 3 filetes diezmillo. Recoger $200 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+    new: "22–23 lb: 1 picanha, 1 portehouse tybone, 1 tira asado, 1 pack churrasco, 1 cowboy, 1 chorizo argentino, 2 New York steaks, 1 tomahawk, 2 rib eye steaks y 3 filetes diezmillo."
+  },
+  "el-mas-vendido": {
+    old: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa. Recoger $145 · Delivery en todo Miami (costo extra según ubicación).",
+    new: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa."
+  },
+  "super-combo-coco": {
+    old: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy. Recoger $180 · Delivery en todo Miami (costo extra según ubicación).",
+    new: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy."
+  }
+};
+async function applyFooterTrimMigration() {
+  const raw = await kvGet("catalog");
+  if (!raw) return 0;
+  let catalog = null;
+  try { catalog = JSON.parse(raw); } catch { return 0; }
+  if (!catalog || !Array.isArray(catalog.departments)) return 0;
+  let fixed = 0;
+  for (const d of catalog.departments) {
+    for (const c of d.categories || []) {
+      for (const it of c.items || []) {
+        const fix = FOOTER_TRIM_FIXES[it.id];
+        if (fix && it.desc === fix.old) { it.desc = fix.new; fixed++; }
+      }
+    }
+  }
+  if (fixed) await kvSet("catalog", JSON.stringify(catalog));
+  return fixed;
+}
+
 async function init() {
   if (process.env.DATABASE_URL) {
     const { Pool } = require("pg");
@@ -287,6 +345,8 @@ async function init() {
   if (dcopy) console.log(`[coco] Copy de delivery actualizado en ${dcopy} ítem(s).`);
   const pollito = await applyPollitoMigration();
   if (pollito) console.log(`[coco] Combo Pollito Tropical reconciliado en ${pollito} ítem(s).`);
+  const ftrim = await applyFooterTrimMigration();
+  if (ftrim) console.log(`[coco] Descripciones recortadas a solo-contenido en ${ftrim} ítem(s).`);
   if (!(await kvGet("order_seq"))) await kvSet("order_seq", "0");
   return kind;
 }

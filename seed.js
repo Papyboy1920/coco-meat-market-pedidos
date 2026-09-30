@@ -8,7 +8,7 @@
 // Precios REAL = confirmados por el dueño.
 // ============================================================
 
-const CATALOG_VERSION = 7;
+const CATALOG_VERSION = 8;
 const SUGERIDO = "💡 Sugerido";
 const NOTA_SUGERIDO = "Precio sugerido — el dueño confirma";
 
@@ -30,7 +30,7 @@ const SEED_CATALOG = {
               unit: "combo",
               image: "combo-pollito-tropical.jpg",
               tag: "🔥 Nuevo",
-              desc: "21–22 lb: 1 punta filet mignon, 3 filetes New York, 1 portehouse tybone, 2 cowboy steak, 1 paquete churrasco, 5 filetes rib eye, 2 filetes diezmillo, 1 tira asado, 10 choribombones argentinos y chimichurri. Recoger $180 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "21–22 lb: 1 punta filet mignon, 3 filetes New York, 1 portehouse tybone, 2 cowboy steak, 1 paquete churrasco, 5 filetes rib eye, 2 filetes diezmillo, 1 tira asado, 10 choribombones argentinos y chimichurri.",
               active: true
             },
             {
@@ -39,7 +39,7 @@ const SEED_CATALOG = {
               price: 99.99,
               unit: "combo",
               image: "especial-99.jpg",
-              desc: "10–11 lb: 2 filetes diezmillo, 1 pack churrasco, 2 cowboy steak, 1 filete New York y 1 pack chorizos argentinos. Recoger $99.99 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "10–11 lb: 2 filetes diezmillo, 1 pack churrasco, 2 cowboy steak, 1 filete New York y 1 pack chorizos argentinos.",
               active: true
             },
             {
@@ -48,7 +48,7 @@ const SEED_CATALOG = {
               price: 145,
               unit: "combo",
               image: "especial-2-beef.jpg",
-              desc: "14–15 lb: 2 filetes rib eye, 4 filetes New York, 1 tomahawk, 2 filetes diezmillo y 1 pack churrasco. Recoger $145 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "14–15 lb: 2 filetes rib eye, 4 filetes New York, 1 tomahawk, 2 filetes diezmillo y 1 pack churrasco.",
               active: true
             },
             {
@@ -57,7 +57,7 @@ const SEED_CATALOG = {
               price: 135,
               unit: "combo",
               image: "combo-yoslin.jpg",
-              desc: "14–15 lb: 2 filetes rib eye, 5 filetes New York, 2–3 filetes diezmillo, 1 pack churrasco y 10 choribombones argentinos. Recoger $135 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "14–15 lb: 2 filetes rib eye, 5 filetes New York, 2–3 filetes diezmillo, 1 pack churrasco y 10 choribombones argentinos.",
               active: true
             },
             {
@@ -67,7 +67,7 @@ const SEED_CATALOG = {
               unit: "combo",
               image: "especial-3-beef.jpg",
               tag: "🔥 El más completo",
-              desc: "22–23 lb: 1 picanha, 1 portehouse tybone, 1 tira asado, 1 pack churrasco, 1 cowboy, 1 chorizo argentino, 2 New York steaks, 1 tomahawk, 2 rib eye steaks y 3 filetes diezmillo. Recoger $200 (Kendall: 4251 SW 122 Ave · Eureka: 13650 SW 200 St) · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "22–23 lb: 1 picanha, 1 portehouse tybone, 1 tira asado, 1 pack churrasco, 1 cowboy, 1 chorizo argentino, 2 New York steaks, 1 tomahawk, 2 rib eye steaks y 3 filetes diezmillo.",
               active: true
             }
           ]
@@ -90,7 +90,7 @@ const SEED_CATALOG = {
               unit: "combo",
               image: "combo-mas-vendido.jpg",
               tag: "🔥 El Más Vendido",
-              desc: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa. Recoger $145 · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "4 New York strips, 2 ribeyes, 1 tomahawk y 1 churrasco. El favorito de la casa.",
               active: true
             },
             {
@@ -100,7 +100,7 @@ const SEED_CATALOG = {
               unit: "combo",
               image: "super-combo.jpg",
               tag: "REAL",
-              desc: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy. Recoger $180 · Delivery en todo Miami (costo extra según ubicación).",
+              desc: "18–19 lb de carne premium: 2 churrascos, 2 ribeyes, 2 New York, 1 punta de filete, 2 chuck steaks y 1 cowboy.",
               active: true
             },
             {
