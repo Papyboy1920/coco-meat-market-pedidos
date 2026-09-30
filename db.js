@@ -231,6 +231,12 @@ async function applyPollitoMigration() {
           it.desc = POLLITO_NEW.desc;
           fixed++;
         }
+        // Caso 2: applyCorrections ya puso desc+imagen nuevos pero dejó el
+        // nombre viejo ("name" no está en sus campos). Reconcilia el nombre.
+        if (it.id === "combo-20-21-lb" && it.name === "Combo 20-21 lbs" && it.desc === POLLITO_NEW.desc) {
+          it.name = POLLITO_NEW.name;
+          fixed++;
+        }
       }
     }
   }
